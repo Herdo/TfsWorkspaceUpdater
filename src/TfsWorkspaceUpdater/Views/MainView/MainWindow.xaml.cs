@@ -53,6 +53,11 @@
             OpenConfigurationCanExecute?.Invoke(sender, e);
         }
 
+        private void Start_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            StartExecuted?.Invoke(sender, e);
+        }
+
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +72,7 @@
         public event EventHandler<ExecutedRoutedEventArgs> CloseExecuted;
         public event EventHandler<ExecutedRoutedEventArgs> OpenConfigurationExecuted;
         public event EventHandler<CanExecuteRoutedEventArgs> OpenConfigurationCanExecute;
+        public event EventHandler<ExecutedRoutedEventArgs> StartExecuted;
 
         void IMainView.Display()
         {

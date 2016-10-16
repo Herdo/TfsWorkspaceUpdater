@@ -1,9 +1,11 @@
 ﻿namespace TfsWorkspaceUpdater.Core.Views.MainView
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Shared;
+    using Shared.Data;
     using Shared.Views.ConfigurationView;
     using Shared.Views.MainView;
 
@@ -16,6 +18,7 @@
         private readonly IApplication _application;
         private readonly Func<IConfigurationPresenter> _configurationPresenterResolver;
 
+        private CommandLineParams _parameter;
         private bool _getting;
 
         #endregion
@@ -47,6 +50,7 @@
             View.CloseExecuted += View_CloseExecuted;
             View.OpenConfigurationExecuted += View_OpenConfigurationExecuted;
             View.OpenConfigurationCanExecute += View_OpenConfigurationCanExecute;
+            View.StartExecuted += View_StartExecuted;
 
             Model.SettingsChanged += Model_SettingsChanged;
         }
@@ -64,11 +68,25 @@
         private async Task GetAll()
         {
             _getting = true;
-            foreach (var workingFolder in ViewModel.WorkingFolders)
+            foreach (var workingFolder in ViewModel.WorkingFolders.Where(m => m.MayGet))
             {
                 await workingFolder.Get();
             }
             _getting = false;
+        }
+
+        private void CloseIfRequested()
+        {
+            if (!(_parameter?.AutoClose ?? false)) return;
+
+            var anyErrors = ViewModel.WorkingFolders.Any(m => m.NumConflicts > 0 || m.NumFailures > 0);
+            if (anyErrors)
+            {
+                if (_parameter.ForceClose)
+                    _application.Close();
+            }
+            else
+                _application.Close();
         }
 
         #endregion
@@ -79,7 +97,13 @@
         private async void View_Displayed(object sender, EventArgs e)
         {
             await LoadWorkingFolders();
-            await GetAll();
+
+            if (_parameter?.AutoStart ?? false)
+            {
+                await GetAll();
+            }
+
+            CloseIfRequested();
         }
 
         private void View_CloseExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -101,6 +125,12 @@
         private async void Model_SettingsChanged(object sender, EventArgs e)
         {
             await LoadWorkingFolders();
+            ViewModel.StartAvailable = true;
+        }
+
+        private async void View_StartExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewModel.StartAvailable = false;
             await GetAll();
         }
 
@@ -108,6 +138,17 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region IMainPresenter Members
+
+        void IMainPresenter.Initialize(CommandLineParams parameter)
+        {
+            if (parameter == null)
+                throw new ArgumentNullException(nameof(parameter));
+
+            _parameter = parameter;
+
+            if (!_parameter.AutoStart)
+                ViewModel.StartAvailable = true;
+        }
 
         void IMainPresenter.DisplayMainView()
         {

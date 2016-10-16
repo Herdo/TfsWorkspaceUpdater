@@ -14,4 +14,8 @@
         <Setter Property="Source" Value="Images/TFSServer.png"/>
     </Style>
 
+    <Style TargetType="Image" x:Key="StartImageStyle">
+        <Setter Property="Source" Value="Images/Run.png"/>
+    </Style>
+
 </ResourceDictionary>

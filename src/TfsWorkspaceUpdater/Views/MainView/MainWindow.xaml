@@ -17,6 +17,8 @@
         <CommandBinding Command="{x:Static views:Commands.OpenConfigurationCommand}"
                         Executed="OpenConfiguration_OnExecuted"
                         CanExecute="OpenConfiguration_OnCanExecute"/>
+        <CommandBinding Command="{x:Static views:Commands.StartCommand}"
+                        Executed="Start_OnExecuted"/>
     </Window.CommandBindings>
 
     <Grid>
@@ -66,11 +68,19 @@
                    FontWeight="Bold"
                    FontSize="28"
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <controls:ProgressEllipse Grid.Row="1"
-                                  ItemsSource="{Binding WorkingFolders}"
-                                  Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}"
-                                  Style="{StaticResource MainProgressEllipse}"
-                                  Width="400"
-                                  Height="400"/>
+        <Grid Grid.Row="1"
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
+            <controls:ProgressEllipse ItemsSource="{Binding WorkingFolders}"
+                                      Style="{StaticResource MainProgressEllipse}"
+                                      Width="400"
+                                      Height="400"/>
+            <Button VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource StartButtonStyle}"
+                    Command="{x:Static views:Commands.StartCommand}"
+                    Visibility="{Binding StartAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Image Style="{StaticResource StartImageStyle}"/>
+            </Button>
+        </Grid>
     </Grid>
 </Window>

@@ -9,6 +9,7 @@
         event EventHandler<ExecutedRoutedEventArgs> CloseExecuted;
         event EventHandler<ExecutedRoutedEventArgs> OpenConfigurationExecuted;
         event EventHandler<CanExecuteRoutedEventArgs> OpenConfigurationCanExecute;
+        event EventHandler<ExecutedRoutedEventArgs> StartExecuted; 
 
         void Display();
     }

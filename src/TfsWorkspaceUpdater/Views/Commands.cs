@@ -13,5 +13,10 @@
             "Save configuration",
             "SaveConfiguration",
             typeof(Commands));
+
+        public static readonly RoutedUICommand StartCommand = new RoutedUICommand(
+            "Start",
+            "Start",
+            typeof(Commands));
     }
 }

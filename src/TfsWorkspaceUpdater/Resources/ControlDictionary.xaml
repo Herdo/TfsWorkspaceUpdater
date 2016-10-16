@@ -28,5 +28,13 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
-    
+
+    <Style TargetType="Button" x:Key="StartButtonStyle">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Height" Value="128"/>
+        <Setter Property="Width" Value="128"/>
+    </Style>
+
 </ResourceDictionary>

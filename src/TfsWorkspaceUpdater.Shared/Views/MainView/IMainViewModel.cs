@@ -7,5 +7,6 @@
     {
         ObservableCollection<UpdateableWorkingFolder> WorkingFolders { get; }
         bool IsLoading { get; set; }
+        bool StartAvailable { get; set; }
     }
 }

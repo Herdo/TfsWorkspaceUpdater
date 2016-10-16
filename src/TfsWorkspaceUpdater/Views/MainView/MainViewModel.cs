@@ -12,6 +12,7 @@
         #region Fields
 
         private bool _isLoading;
+        private bool _startAvailable;
 
         #endregion
 
@@ -37,6 +38,17 @@
             {
                 if (value == _isLoading) return;
                 _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool StartAvailable
+        {
+            get { return _startAvailable; }
+            set
+            {
+                if (value == _startAvailable) return;
+                _startAvailable = value;
                 OnPropertyChanged();
             }
         }
