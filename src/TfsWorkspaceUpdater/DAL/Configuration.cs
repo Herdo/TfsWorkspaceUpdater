@@ -10,7 +10,7 @@
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Fields
-
+            
         private readonly List<TfsConnectionInformation> _connections;
 
         #endregion

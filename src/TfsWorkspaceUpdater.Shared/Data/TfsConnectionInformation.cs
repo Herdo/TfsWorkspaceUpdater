@@ -74,8 +74,8 @@
         [XmlElement(ElementName = "Password")]
         public string EncodedPassword
         {
-            get { return EncodePassword(Password); }
-            set { Password = DecodePassword(value); }
+            get { return string.IsNullOrWhiteSpace(Password) ? string.Empty : EncodePassword(Password); }
+            set { Password = string.IsNullOrWhiteSpace(value) ? string.Empty : DecodePassword(value); }
         }
 
         #endregion

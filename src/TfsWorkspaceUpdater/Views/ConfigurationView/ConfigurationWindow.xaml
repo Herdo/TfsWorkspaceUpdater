@@ -12,7 +12,8 @@
     
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static views:Commands.SaveConfigurationCommand}"
-                        Executed="SaveConfiguration_OnExecuted"/>
+                        Executed="SaveConfiguration_OnExecuted"
+                        CanExecute="SaveConfiguration_OnCanExecute"/>
     </Window.CommandBindings>
     
     <Grid>
@@ -41,16 +42,16 @@
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Uri"
-                                    Binding="{Binding TfsAddress}"
+                                    Binding="{Binding TfsAddress, UpdateSourceTrigger=PropertyChanged}"
                                     Width="170"/>
                 <DataGridCheckBoxColumn Header="Integrated Security"
-                                        Binding="{Binding IntegratedSecurity}"
+                                        Binding="{Binding IntegratedSecurity, UpdateSourceTrigger=PropertyChanged}"
                                         Width="120"/>
                 <DataGridTextColumn Header="Username"
-                                    Binding="{Binding Username}"
+                                    Binding="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                                     Width="180"/>
                 <DataGridTextColumn Header="Password"
-                                    Binding="{Binding Password}"
+                                    Binding="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                                     Width="180"/>
             </DataGrid.Columns>
         </DataGrid>

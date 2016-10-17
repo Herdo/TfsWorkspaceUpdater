@@ -165,7 +165,7 @@
                     if (s.NumFiles > 0
                      || s.NumUpdated > 0)
                     {
-                        pie.Fill = Brushes.DarkGreen;
+                        pie.Fill = Brushes.GreenYellow;
                     }
                     else
                     {

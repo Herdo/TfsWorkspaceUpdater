@@ -36,6 +36,11 @@
             SaveConfigurationExecuted?.Invoke(sender, e);
         }
 
+        private void SaveConfiguration_OnCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            SaveConfigurationCanExecute?.Invoke(sender, e);
+        }
+
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +52,7 @@
         }
 
         public event EventHandler<ExecutedRoutedEventArgs> SaveConfigurationExecuted;
+        public event EventHandler<CanExecuteRoutedEventArgs> SaveConfigurationCanExecute;
 
         void IConfigurationView.Display()
         {

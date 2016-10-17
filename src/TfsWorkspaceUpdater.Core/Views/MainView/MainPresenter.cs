@@ -68,11 +68,13 @@
         private async Task GetAll()
         {
             _getting = true;
+            CommandManager.InvalidateRequerySuggested();
             foreach (var workingFolder in ViewModel.WorkingFolders.Where(m => m.MayGet))
             {
                 await workingFolder.Get();
             }
             _getting = false;
+            CommandManager.InvalidateRequerySuggested();
         }
 
         private void CloseIfRequested()
@@ -85,8 +87,14 @@
                 if (_parameter.ForceClose)
                     _application.Close();
             }
-            else
+            else if (ViewModel.WorkingFolders.Any())
                 _application.Close();
+        }
+
+        private void OpenConfigurationView()
+        {
+            var configurationPresenter = _configurationPresenterResolver();
+            configurationPresenter.DisplayConfigurationView();
         }
 
         #endregion
@@ -98,9 +106,18 @@
         {
             await LoadWorkingFolders();
 
+            if (!ViewModel.WorkingFolders.Any())
+            {
+                OpenConfigurationView();
+            }
+            
             if (_parameter?.AutoStart ?? false)
             {
                 await GetAll();
+            }
+            else if (ViewModel.WorkingFolders.Any())
+            {
+                ViewModel.StartAvailable = true;
             }
 
             CloseIfRequested();
@@ -113,8 +130,7 @@
 
         private void View_OpenConfigurationExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            var configurationPresenter = _configurationPresenterResolver();
-            configurationPresenter.DisplayConfigurationView();
+            OpenConfigurationView();
         }
 
         private void View_OpenConfigurationCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -125,7 +141,7 @@
         private async void Model_SettingsChanged(object sender, EventArgs e)
         {
             await LoadWorkingFolders();
-            ViewModel.StartAvailable = true;
+            ViewModel.StartAvailable = ViewModel.WorkingFolders.Any();
         }
 
         private async void View_StartExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -145,9 +161,6 @@
                 throw new ArgumentNullException(nameof(parameter));
 
             _parameter = parameter;
-
-            if (!_parameter.AutoStart)
-                ViewModel.StartAvailable = true;
         }
 
         void IMainPresenter.DisplayMainView()
