@@ -124,7 +124,7 @@
                 if (!item.MayGet)
                 {
                     pie.Fill = Brushes.DimGray;
-                    pie.ToolTip = $"Working folder \"{item.LocalPath}\" is cloaked.";
+                    pie.ToolTip = $"Working folder \"{item.ServerPath}\" is locally cloaked.";
                 }
 
                 _elementMapping.Add(item, pie);

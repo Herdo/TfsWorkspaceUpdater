@@ -23,6 +23,8 @@
 
         public string LocalPath => _workingFolder.LocalItem;
 
+        public string ServerPath => _workingFolder.ServerItem;
+
         public bool MayGet => !_workingFolder.IsCloaked;
 
         public bool Started
