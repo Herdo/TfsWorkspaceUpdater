@@ -81,6 +81,16 @@
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region Constructors
+
+        public TfsConnectionInformation()
+        {
+            IntegratedSecurity = true;
+        }
+
+        #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Private Methods
 
         private static string EncodePassword(string password)
