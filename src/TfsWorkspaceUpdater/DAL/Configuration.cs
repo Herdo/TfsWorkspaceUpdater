@@ -23,6 +23,9 @@
             _connections = new List<TfsConnectionInformation>();
             if (Settings.Default.ConnectionInformations != null)
                 _connections.AddRange(Settings.Default.ConnectionInformations);
+            AutoStart = Settings.Default.AutoStart;
+            AutoClose = Settings.Default.AutoClose;
+            ForceClose = Settings.Default.ForceClose;
         }
 
         #endregion
@@ -32,10 +35,17 @@
 
         public event EventHandler Saved;
 
+        public bool AutoStart { get; set; }
+        public bool AutoClose { get; set; }
+        public bool ForceClose { get; set; }
+
         List<TfsConnectionInformation> IConfiguration.Connections => _connections;
 
         void IConfiguration.Save()
         {
+            Settings.Default.AutoStart = AutoStart;
+            Settings.Default.AutoClose = AutoClose;
+            Settings.Default.ForceClose = ForceClose;
             Settings.Default.ConnectionInformations = _connections.ToArray();
             Settings.Default.Save();
             Saved?.Invoke(this, EventArgs.Empty);

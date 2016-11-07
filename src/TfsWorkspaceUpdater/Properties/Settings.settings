@@ -5,5 +5,14 @@
     <Setting Name="ConnectionInformations" Type="TfsWorkspaceUpdater.Shared.Data.TfsConnectionInformation[]" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="AutoStart" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoClose" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ForceClose" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

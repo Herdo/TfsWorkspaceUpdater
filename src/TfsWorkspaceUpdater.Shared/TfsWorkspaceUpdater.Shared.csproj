@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="DAL\ITfsAccessor.cs" />
     <Compile Include="DAL\IConfiguration.cs" />
-    <Compile Include="Data\CommandLineParams.cs" />
     <Compile Include="Data\TfsConnectionInformation.cs" />
     <Compile Include="Data\UpdateableWorkingFolder.cs" />
     <Compile Include="IApplication.cs" />

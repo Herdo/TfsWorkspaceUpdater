@@ -43,6 +43,36 @@
 
         public event EventHandler SettingsChanged;
 
+        bool IMainModel.UseAutoStart
+        {
+            get { return _configuration.AutoStart; }
+            set
+            {
+                _configuration.AutoStart = value;
+                _configuration.Save();
+            }
+        }
+
+        bool IMainModel.UseAutoClose
+        {
+            get { return _configuration.AutoClose; }
+            set
+            {
+                _configuration.AutoClose = value;
+                _configuration.Save();
+            }
+        }
+
+        bool IMainModel.UseForceClose
+        {
+            get { return _configuration.ForceClose; }
+            set
+            {
+                _configuration.ForceClose = value;
+                _configuration.Save();
+            }
+        }
+
         List<UpdateableWorkingFolder> IMainModel.LoadAllWorkingFolders() => _tfsAccessor.LoadAllWorkingFolders(_configuration.Connections);
 
         #endregion

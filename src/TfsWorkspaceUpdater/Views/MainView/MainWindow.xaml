@@ -6,8 +6,8 @@
         xmlns:views="clr-namespace:TfsWorkspaceUpdater.Views"
         xmlns:controls="clr-namespace:TfsWorkspaceUpdater.Controls"
         mc:Ignorable="d"
-        Height="450"
-        Width="550"
+        Height="500"
+        Width="560"
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource WindowStyle}">
     
@@ -25,6 +25,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -82,5 +83,35 @@
                 <Image Style="{StaticResource StartImageStyle}"/>
             </Button>
         </Grid>
+        
+        <!-- Immediate Settings -->
+        <Border Grid.Row="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="LightGray"
+                Padding="5">
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Column="0"
+                          Content="Start automatically"
+                          IsChecked="{Binding UseAutoStart}"
+                          HorizontalAlignment="Center"/>
+
+                <CheckBox Grid.Column="1"
+                          Content="Close automatically"
+                          IsChecked="{Binding UseAutoClose}"
+                          HorizontalAlignment="Center"/>
+
+                <CheckBox Grid.Column="2"
+                          Content="Close forcefully"
+                          IsChecked="{Binding UseForceClose}"
+                          HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

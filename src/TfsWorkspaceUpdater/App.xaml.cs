@@ -3,13 +3,11 @@
 namespace TfsWorkspaceUpdater
 {
     using System;
-    using System.Linq;
     using Core.Views.ConfigurationView;
     using Core.Views.MainView;
     using DAL;
     using Microsoft.Practices.Unity;
     using Shared;
-    using Shared.Data;
     using Shared.DAL;
     using Shared.Views.ConfigurationView;
     using Shared.Views.MainView;
@@ -66,21 +64,6 @@ namespace TfsWorkspaceUpdater
             return container;
         }
 
-        private static CommandLineParams GetCommandLineParameters()
-        {
-            var args = Environment.GetCommandLineArgs();
-            var result = new CommandLineParams();
-
-            if (args.Contains("/s"))
-                result.AutoStart = true;
-            if (args.Contains("/c"))
-                result.AutoClose = true;
-            if (args.Contains("/f"))
-                result.ForceClose = true;
-
-            return result;
-        }
-
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,11 +71,10 @@ namespace TfsWorkspaceUpdater
 
         private void App_Startup(object sender, StartupEventArgs e)
         {
-            var parameter = GetCommandLineParameters();
             using (var container = ConfigureContainer())
             {
                 var mainPresenter = container.Resolve<IMainPresenter>();
-                mainPresenter.Initialize(parameter);
+                mainPresenter.InitializeViewModel();
                 mainPresenter.DisplayMainView();
             }
         }

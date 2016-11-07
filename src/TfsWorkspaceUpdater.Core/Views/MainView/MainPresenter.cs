@@ -1,11 +1,11 @@
 ﻿namespace TfsWorkspaceUpdater.Core.Views.MainView
 {
     using System;
+    using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Shared;
-    using Shared.Data;
     using Shared.Views.ConfigurationView;
     using Shared.Views.MainView;
 
@@ -17,8 +17,7 @@
             
         private readonly IApplication _application;
         private readonly Func<IConfigurationPresenter> _configurationPresenterResolver;
-
-        private CommandLineParams _parameter;
+        
         private bool _getting;
 
         #endregion
@@ -79,12 +78,12 @@
 
         private void CloseIfRequested()
         {
-            if (!(_parameter?.AutoClose ?? false)) return;
+            if (!ViewModel.UseAutoClose) return;
 
             var anyErrors = ViewModel.WorkingFolders.Any(m => m.NumConflicts > 0 || m.NumFailures > 0);
             if (anyErrors)
             {
-                if (_parameter.ForceClose)
+                if (ViewModel.UseForceClose)
                     _application.Close();
             }
             else if (ViewModel.WorkingFolders.Any())
@@ -111,7 +110,7 @@
                 OpenConfigurationView();
             }
             
-            if (_parameter?.AutoStart ?? false)
+            if (ViewModel.UseAutoStart)
             {
                 await GetAll();
             }
@@ -138,16 +137,32 @@
             e.CanExecute = !_getting;
         }
 
+        private async void View_StartExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewModel.StartAvailable = false;
+            await GetAll();
+        }
+
         private async void Model_SettingsChanged(object sender, EventArgs e)
         {
             await LoadWorkingFolders();
             ViewModel.StartAvailable = ViewModel.WorkingFolders.Any();
         }
 
-        private async void View_StartExecuted(object sender, ExecutedRoutedEventArgs e)
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            ViewModel.StartAvailable = false;
-            await GetAll();
+            switch (e.PropertyName)
+            {
+                case nameof(IMainViewModel.UseAutoStart):
+                    Model.UseAutoStart = ViewModel.UseAutoStart;
+                    break;
+                case nameof(IMainViewModel.UseAutoClose):
+                    Model.UseAutoClose = ViewModel.UseAutoClose;
+                    break;
+                case nameof(IMainViewModel.UseForceClose):
+                    Model.UseForceClose = ViewModel.UseForceClose;
+                    break;
+            }
         }
 
         #endregion
@@ -155,12 +170,13 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region IMainPresenter Members
 
-        void IMainPresenter.Initialize(CommandLineParams parameter)
+        void IMainPresenter.InitializeViewModel()
         {
-            if (parameter == null)
-                throw new ArgumentNullException(nameof(parameter));
+            ViewModel.UseAutoStart = Model.UseAutoStart;
+            ViewModel.UseAutoClose = Model.UseAutoClose;
+            ViewModel.UseForceClose = Model.UseForceClose;
 
-            _parameter = parameter;
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
 
         void IMainPresenter.DisplayMainView()

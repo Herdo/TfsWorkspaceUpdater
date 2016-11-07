@@ -13,6 +13,9 @@
 
         private bool _isLoading;
         private bool _startAvailable;
+        private bool _useAutoStart;
+        private bool _useAutoClose;
+        private bool _useForceClose;
 
         #endregion
 
@@ -49,6 +52,39 @@
             {
                 if (value == _startAvailable) return;
                 _startAvailable = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool UseAutoStart
+        {
+            get { return _useAutoStart; }
+            set
+            {
+                if (value == _useAutoStart) return;
+                _useAutoStart = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool UseAutoClose
+        {
+            get { return _useAutoClose; }
+            set
+            {
+                if (value == _useAutoClose) return;
+                _useAutoClose = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool UseForceClose
+        {
+            get { return _useForceClose; }
+            set
+            {
+                if (value == _useForceClose) return;
+                _useForceClose = value;
                 OnPropertyChanged();
             }
         }
