@@ -30,8 +30,19 @@
                 Background="LightGray"
                 Padding="5">
 
-            <TextBlock Text="Configuration"
-                       Style="{StaticResource HeaderTextBlock}"/>
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0"
+                       Style="{StaticResource HeaderImageStyle}"/>
+                
+                <TextBlock Grid.Column="1"
+                           Text="Configuration"
+                           Style="{StaticResource HeaderTextBlock}"/>
+            </Grid>
         </Border>
 
         <!-- Data -->

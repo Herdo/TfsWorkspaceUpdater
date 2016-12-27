@@ -36,22 +36,26 @@
                 Padding="5">
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                
+                <Image Grid.Column="0"
+                       Style="{StaticResource HeaderImageStyle}"/>
 
-                <TextBlock Grid.Column="0"
+                <TextBlock Grid.Column="1"
                             Text="TFS Workspace Updater"
                             Style="{StaticResource HeaderTextBlock}"/>
 
-                <Button Grid.Column="1"
+                <Button Grid.Column="2"
                         Style="{StaticResource HeaderButtonStyle}"
                         ToolTip="Open configuration"
                         Command="{x:Static views:Commands.OpenConfigurationCommand}">
                     <Image Style="{StaticResource TfsServerImageStyle}" />
                 </Button>
-                <Button Grid.Column="2"
+                <Button Grid.Column="3"
                         Style="{StaticResource HeaderButtonStyle}"
                         ToolTip="Close"
                         Command="Close">

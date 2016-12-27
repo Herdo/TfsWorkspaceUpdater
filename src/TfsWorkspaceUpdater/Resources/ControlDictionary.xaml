@@ -6,9 +6,9 @@
         <Setter Property="ResizeMode" Value="NoResize"/>
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="AllowsTransparency" Value="True"/>
-        <Setter Property="ShowInTaskbar" Value="False"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Icon" Value="Images/Updater.png"/>
     </Style>
     
     <Style TargetType="Button" x:Key="HeaderButtonStyle">
@@ -35,6 +35,13 @@
         <Setter Property="Margin" Value="5"/>
         <Setter Property="Height" Value="128"/>
         <Setter Property="Width" Value="128"/>
+    </Style>
+    
+    <Style TargetType="Image" x:Key="HeaderImageStyle">
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Source" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=Icon}"/>
     </Style>
 
 </ResourceDictionary>
