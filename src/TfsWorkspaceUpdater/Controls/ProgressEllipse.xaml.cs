@@ -126,6 +126,10 @@
                     pie.Fill = Brushes.DimGray;
                     pie.ToolTip = $"Working folder \"{item.ServerPath}\" is locally cloaked.";
                 }
+                else
+                {
+                    pie.ToolTip = $"Working folder \"{item.LocalPath}\" is pending.";
+                }
 
                 _elementMapping.Add(item, pie);
 
