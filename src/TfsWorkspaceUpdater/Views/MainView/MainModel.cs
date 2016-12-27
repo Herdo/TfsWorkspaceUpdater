@@ -49,7 +49,9 @@
             set
             {
                 _configuration.AutoStart = value;
+                _configuration.Saved -= Configuration_Saved;
                 _configuration.Save();
+                _configuration.Saved += Configuration_Saved;
             }
         }
 
@@ -59,7 +61,9 @@
             set
             {
                 _configuration.AutoClose = value;
+                _configuration.Saved -= Configuration_Saved;
                 _configuration.Save();
+                _configuration.Saved += Configuration_Saved;
             }
         }
 
@@ -69,7 +73,9 @@
             set
             {
                 _configuration.ForceClose = value;
+                _configuration.Saved -= Configuration_Saved;
                 _configuration.Save();
+                _configuration.Saved += Configuration_Saved;
             }
         }
 
