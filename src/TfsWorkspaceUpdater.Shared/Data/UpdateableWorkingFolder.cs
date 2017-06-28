@@ -1,15 +1,19 @@
 ﻿namespace TfsWorkspaceUpdater.Shared.Data
 {
+    using System;
     using System.ComponentModel;
+    using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Microsoft.TeamFoundation.VersionControl.Client;
+    using Views.MainView;
 
     public class UpdateableWorkingFolder : INotifyPropertyChanged
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Fields
 
+        private readonly IMainView _mainView;
         private readonly Workspace _workspace;
         private readonly WorkingFolder _workingFolder;
 
@@ -62,8 +66,9 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Constructors
 
-        public UpdateableWorkingFolder(Workspace workspace, WorkingFolder workingFolder)
+        public UpdateableWorkingFolder(IMainView mainView, Workspace workspace, WorkingFolder workingFolder)
         {
+            _mainView = mainView;
             _workspace = workspace;
             _workingFolder = workingFolder;
         }
@@ -83,7 +88,21 @@
         public async Task Get()
         {
             Started = true;
-            var status = await Task.Run(() => _workspace.Get(new GetRequest(_workingFolder.LocalItem, RecursionType.Full, VersionSpec.Latest), GetOptions.None));
+            GetStatus status;
+            try
+            {
+                status = await Task.Run(() => _workspace.Get(new GetRequest(_workingFolder.LocalItem, RecursionType.Full, VersionSpec.Latest), GetOptions.None));
+            }
+            catch (IOException e)
+            {
+                _mainView.ShowError($"Error - getting working folder '{_workingFolder.LocalItem}' failed", e);
+                NumConflicts = 0;
+                NumFailures = 0;
+                NumUpdated = 0;
+                NumFiles = 0;         
+                Done = true;
+                return;
+            }
             NumConflicts = status.NumConflicts;
             NumFailures = status.NumFailures;
             NumUpdated = status.NumUpdated;

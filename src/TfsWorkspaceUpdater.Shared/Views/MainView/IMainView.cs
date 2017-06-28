@@ -12,5 +12,7 @@
         event EventHandler<ExecutedRoutedEventArgs> StartExecuted; 
 
         void Display();
+
+        void ShowError(string message, Exception exception);
     }
 }

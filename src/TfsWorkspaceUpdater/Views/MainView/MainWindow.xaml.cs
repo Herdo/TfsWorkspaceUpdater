@@ -79,6 +79,11 @@
             ShowDialog();
         }
 
+        void IMainView.ShowError(string caption, Exception exception)
+        {
+            MessageBox.Show(exception.Message, caption, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+        }
+
         #endregion
     }
 }
