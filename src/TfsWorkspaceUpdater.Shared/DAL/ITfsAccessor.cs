@@ -1,10 +1,11 @@
-﻿namespace TfsWorkspaceUpdater.Shared.DAL
-{
-    using System.Collections.Generic;
-    using Data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using TfsWorkspaceUpdater.Shared.Data;
 
+namespace TfsWorkspaceUpdater.Shared.DAL
+{
     public interface ITfsAccessor
     {
-        List<UpdateableWorkingFolder> LoadAllWorkingFolders(IEnumerable<TfsConnectionInformation> connectionInformations);
+        Task<List<UpdateableWorkingFolder>> LoadAllWorkingFoldersAsync(IEnumerable<TfsConnectionInformation> connectionInformation);
     }
 }

@@ -1,9 +1,10 @@
-﻿namespace TfsWorkspaceUpdater.Shared.Views.MainView
-{
-    using System;
-    using System.Collections.Generic;
-    using Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TfsWorkspaceUpdater.Shared.Data;
 
+namespace TfsWorkspaceUpdater.Shared.Views.MainView
+{
     public interface IMainModel : IModel
     {
         event EventHandler SettingsChanged;
@@ -14,6 +15,6 @@
         
         bool UseForceClose { get; set; }
 
-        List<UpdateableWorkingFolder> LoadAllWorkingFolders();
+        Task<List<UpdateableWorkingFolder>> LoadAllWorkingFoldersAsync();
     }
 }

@@ -1,15 +1,19 @@
-﻿namespace TfsWorkspaceUpdater.Shared.Data
-{
-    using System;
-    using System.ComponentModel;
-    using System.IO;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
-    using Microsoft.TeamFoundation.VersionControl.Client;
-    using Views.MainView;
+﻿using System.ComponentModel;
+using System.IO;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Microsoft.TeamFoundation;
+using Microsoft.TeamFoundation.VersionControl.Client;
+using TfsWorkspaceUpdater.Shared.Views.MainView;
 
+namespace TfsWorkspaceUpdater.Shared.Data
+{
     public class UpdateableWorkingFolder : INotifyPropertyChanged
     {
+        public const int MaxRetries = 10;
+        private const int RetryDelayInMilliseconds = 6_000;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Fields
 
@@ -19,6 +23,7 @@
 
         private bool _started;
         private bool _done;
+        private int _retries;
 
         #endregion
 
@@ -33,8 +38,8 @@
 
         public bool Started
         {
-            get { return _started; }
-            set
+            get => _started;
+            private set
             {
                 if (value == _started) return;
                 _started = value;
@@ -44,11 +49,22 @@
 
         public bool Done
         {
-            get { return _done; }
-            set
+            get => _done;
+            private set
             {
                 if (value == _done) return;
                 _done = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int Retries
+        {
+            get => _retries;
+            private set
+            {
+                if (value == _retries)  return;
+                _retries = value;
                 OnPropertyChanged();
             }
         }
@@ -71,6 +87,7 @@
             _mainView = mainView;
             _workspace = workspace;
             _workingFolder = workingFolder;
+            Retries = 1;
         }
 
         #endregion
@@ -85,24 +102,47 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Public Methods
 
-        public async Task Get()
+        public async Task GetAsync()
         {
             Started = true;
             GetStatus status;
-            try
+            do
             {
-                status = await Task.Run(() => _workspace.Get(new GetRequest(_workingFolder.LocalItem, RecursionType.Full, VersionSpec.Latest), GetOptions.None));
-            }
-            catch (IOException e)
-            {
-                _mainView.ShowError($"Error - getting working folder '{_workingFolder.LocalItem}' failed", e);
-                NumConflicts = 0;
-                NumFailures = 0;
-                NumUpdated = 0;
-                NumFiles = 0;         
-                Done = true;
-                return;
-            }
+                if (Retries > 1)
+                    await Task.Delay(RetryDelayInMilliseconds);
+
+                try
+                {
+                    status = await Task.Run(() => _workspace.Get(new GetRequest(_workingFolder.LocalItem, RecursionType.Full, VersionSpec.Latest), GetOptions.None));
+                }
+                catch (IOException e)
+                {
+                    _mainView.ShowError($"Error - getting working folder '{_workingFolder.LocalItem}' failed", e);
+                    NumConflicts = 0;
+                    NumFailures = 0;
+                    NumUpdated = 0;
+                    NumFiles = 0;
+                    Done = true;
+                    return;
+                }
+                catch (WebException)
+                {
+                    if (Retries + 1 > MaxRetries)
+                        throw;
+
+                    Retries++;
+                    status = null;
+                }
+                catch (TeamFoundationServiceUnavailableException)
+                {
+                    if (Retries + 1 > MaxRetries)
+                        throw;
+
+                    Retries++;
+                    status = null;
+                }
+            } while (status == null);
+
             NumConflicts = status.NumConflicts;
             NumFailures = status.NumFailures;
             NumUpdated = status.NumUpdated;

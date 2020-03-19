@@ -149,9 +149,12 @@
             var pie = _elementMapping[s];
             if (s.Started && !s.Done)
             {
+                var retryMessage = s.Retries == 1
+                                       ? string.Empty
+                                       : $"({s.Retries}/{UpdateableWorkingFolder.MaxRetries})";
                 pie.Fill = Brushes.PaleGoldenrod;
                 pie.ToolTip = "Getting working folder...";
-                ProgressInfo.Text = $"Updating \"{s.LocalPath}\" ...";
+                ProgressInfo.Text = $"Updating \"{s.LocalPath}\" {retryMessage}...";
             }
             else if (s.Done)
             {

@@ -1,24 +1,30 @@
-﻿namespace TfsWorkspaceUpdater.DAL
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using Microsoft.TeamFoundation;
-    using Microsoft.TeamFoundation.Client;
-    using Microsoft.TeamFoundation.VersionControl.Client;
-    using Shared.Data;
-    using Shared.DAL;
-    using Shared.Views.MainView;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.TeamFoundation;
+using Microsoft.TeamFoundation.Client;
+using Microsoft.TeamFoundation.VersionControl.Client;
+using Microsoft.VisualStudio.Services.Common;
+using TfsWorkspaceUpdater.Shared.DAL;
+using TfsWorkspaceUpdater.Shared.Data;
+using TfsWorkspaceUpdater.Shared.Views.MainView;
 
+namespace TfsWorkspaceUpdater.DAL
+{
     public class TfsAccessor : ITfsAccessor
     {
+        private const int MaxRetries = 10;
+        private const int RetryDelayInMilliseconds = 6_000;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Fields
 
         private readonly IMainView _mainView;
         private readonly string _machineName;
-        private readonly string _userDomainName;
+
+        private int _retries;
 
         #endregion
 
@@ -29,7 +35,7 @@
         {
             _mainView = mainView;
             _machineName = Environment.MachineName;
-            _userDomainName = Environment.UserDomainName;
+            _retries = 1;
         }
 
         #endregion
@@ -37,26 +43,45 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Private Methods
 
-        private static TfsTeamProjectCollection OpenCollection(TfsConnectionInformation connectionInformation)
+        private async Task<TfsTeamProjectCollection> OpenCollectionAsync(TfsConnectionInformation connectionInformation)
         {
-            TfsTeamProjectCollection tpc;
-
-            if (connectionInformation.IntegratedSecurity)
+            do
             {
-                tpc = new TfsTeamProjectCollection(new Uri(connectionInformation.TfsAddress));
-                tpc.EnsureAuthenticated();
-            }
-            else
-            {
-                var netCred = new NetworkCredential(connectionInformation.Username, connectionInformation.Password);
-                var baseCred = new BasicAuthCredential(netCred);
-                var tfsCred = new TfsClientCredentials(baseCred) { AllowInteractive = false };
+                try
+                {
+                    if (_retries > 1)
+                        await Task.Delay(RetryDelayInMilliseconds);
 
-                tpc = new TfsTeamProjectCollection(new Uri(connectionInformation.TfsAddress), tfsCred);
-                tpc.Authenticate();
-            }
+                    TfsTeamProjectCollection tpc;
+                    if (connectionInformation.IntegratedSecurity)
+                    {
+                        tpc = new TfsTeamProjectCollection(new Uri(connectionInformation.TfsAddress));
+                        tpc.EnsureAuthenticated();
+                    }
+                    else
+                    {
+                        var netCred = new NetworkCredential(connectionInformation.Username, connectionInformation.Password);
+                        var windowsCred = new Microsoft.VisualStudio.Services.Common.WindowsCredential(netCred);
+                        var vssCred = new VssCredentials(windowsCred);
+                        tpc = new TfsTeamProjectCollection(new Uri(connectionInformation.TfsAddress), vssCred);
+                        tpc.Authenticate();
+                    }
 
-            return tpc;
+                    return tpc;
+                }
+                catch (WebException)
+                {
+                    if (_retries + 1 > MaxRetries)
+                        throw;
+                    _retries++;
+                }
+                catch (TeamFoundationServiceUnavailableException)
+                {
+                    if (_retries + 1 > MaxRetries)
+                        throw;
+                    _retries++;
+                }
+            } while (true);
         }
 
         #endregion
@@ -64,16 +89,16 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region ITfsAccessor Members
 
-        List<UpdateableWorkingFolder> ITfsAccessor.LoadAllWorkingFolders(IEnumerable<TfsConnectionInformation> connectionInformations)
+        async Task<List<UpdateableWorkingFolder>> ITfsAccessor.LoadAllWorkingFoldersAsync(IEnumerable<TfsConnectionInformation> connectionInformation)
         {
             var result = new List<UpdateableWorkingFolder>();
 
-            foreach (var ci in connectionInformations)
+            foreach (var ci in connectionInformation)
             {
                 TfsTeamProjectCollection tpc;
                 try
                 {
-                    tpc = OpenCollection(ci);
+                    tpc = await OpenCollectionAsync(ci);
                 }
                 catch (WebException e)
                 {
@@ -86,9 +111,9 @@
                     return result;
                 }
                 var vcs = tpc.GetService<VersionControlServer>();
-                var workspaces = vcs.QueryWorkspaces(null, null, _machineName);
+                var workspaceCollection = vcs.QueryWorkspaces(null, null, _machineName);
 
-                result.AddRange(workspaces.SelectMany(w => w.Folders.Select(f => new UpdateableWorkingFolder(_mainView, w, f))));
+                result.AddRange(workspaceCollection.SelectMany(w => w.Folders.Select(f => new UpdateableWorkingFolder(_mainView, w, f))));
             }
                 
             return result;

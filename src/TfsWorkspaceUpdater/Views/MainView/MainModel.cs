@@ -1,4 +1,6 @@
-﻿namespace TfsWorkspaceUpdater.Views.MainView
+﻿using System.Threading.Tasks;
+
+namespace TfsWorkspaceUpdater.Views.MainView
 {
     using System;
     using System.Collections.Generic;
@@ -45,7 +47,7 @@
 
         bool IMainModel.UseAutoStart
         {
-            get { return _configuration.AutoStart; }
+            get => _configuration.AutoStart;
             set
             {
                 _configuration.AutoStart = value;
@@ -57,7 +59,7 @@
 
         bool IMainModel.UseAutoClose
         {
-            get { return _configuration.AutoClose; }
+            get => _configuration.AutoClose;
             set
             {
                 _configuration.AutoClose = value;
@@ -69,7 +71,7 @@
 
         bool IMainModel.UseForceClose
         {
-            get { return _configuration.ForceClose; }
+            get => _configuration.ForceClose;
             set
             {
                 _configuration.ForceClose = value;
@@ -79,7 +81,7 @@
             }
         }
 
-        List<UpdateableWorkingFolder> IMainModel.LoadAllWorkingFolders() => _tfsAccessor.LoadAllWorkingFolders(_configuration.Connections);
+        async Task<List<UpdateableWorkingFolder>> IMainModel.LoadAllWorkingFoldersAsync() => await _tfsAccessor.LoadAllWorkingFoldersAsync(_configuration.Connections);
 
         #endregion
     }

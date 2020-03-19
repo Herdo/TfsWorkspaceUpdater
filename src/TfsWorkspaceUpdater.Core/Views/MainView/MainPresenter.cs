@@ -57,7 +57,7 @@
         private async Task LoadWorkingFolders()
         {
             ViewModel.IsLoading = true;
-            var allWorkingFolders = await Task.Run(() => Model.LoadAllWorkingFolders());
+            var allWorkingFolders = await Model.LoadAllWorkingFoldersAsync();
             ViewModel.WorkingFolders.Clear();
             foreach (var workingFolder in allWorkingFolders)
                 ViewModel.WorkingFolders.Add(workingFolder);
@@ -70,7 +70,7 @@
             CommandManager.InvalidateRequerySuggested();
             foreach (var workingFolder in ViewModel.WorkingFolders.Where(m => m.MayGet))
             {
-                await workingFolder.Get();
+                await workingFolder.GetAsync();
             }
             _getting = false;
             CommandManager.InvalidateRequerySuggested();

@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using Unity;
+using Unity.Lifetime;
 
 namespace TfsWorkspaceUpdater
 {
@@ -6,7 +8,6 @@ namespace TfsWorkspaceUpdater
     using Core.Views.ConfigurationView;
     using Core.Views.MainView;
     using DAL;
-    using Microsoft.Practices.Unity;
     using Shared;
     using Shared.DAL;
     using Shared.Views.ConfigurationView;
